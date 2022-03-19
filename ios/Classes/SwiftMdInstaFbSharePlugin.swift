@@ -15,7 +15,7 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       if (call.method == "share_insta_story") {
           let args = (call.arguments as! NSDictionary)
-          let urlScheme = URL(string: "instagram-stories://share")!
+          let urlScheme = URL(string: "instagram://app")!
           if (UIApplication.shared.canOpenURL(urlScheme)) {
               let backgroundImagePath = args["backgroundImage"] as! String;
               
