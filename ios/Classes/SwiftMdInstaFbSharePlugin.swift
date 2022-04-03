@@ -15,7 +15,7 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       if (call.method == "share_insta_story") {
           let args = (call.arguments as! NSDictionary)
-          let urlScheme = URL(string: "instagram://app")!
+          let urlScheme = URL(string: "instagram-stories://share")!
           if (UIApplication.shared.canOpenURL(urlScheme)) {
               let backgroundImagePath = args["backgroundImage"] as! String;
               
@@ -82,57 +82,18 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
           }
       } else if (call.method == "share_FB_story") {
           let args = (call.arguments as! NSDictionary)
-          let urlScheme = URL(string: "facebook-stories://share")!
-          if (UIApplication.shared.canOpenURL(urlScheme)) {
-              let backgroundImagePath = args["backgroundImage"] as! String;
-              
-              var backgroundImage: UIImage? = nil;
-              let fileManager = FileManager.default;
-              
-        
-              let isBackgroundImageExist = fileManager.fileExists(atPath: backgroundImagePath);
-              if (isBackgroundImageExist) {
-                  backgroundImage = UIImage(contentsOfFile: backgroundImagePath)!;
-              } else {
-                  return result(2);
+          let urlScheme = URL(string: "instagram-stories://app")!
+          let backgroundImagePath = args["backgroundImage"] as! String;
+          
+          
+          if UIApplication.shared.canOpenURL(urlScheme) { // has Instagram
+              let url = URL(string: "instagram://library?LocalIdentifier=" + backgroundImagePath)
+
+              if UIApplication.shared.canOpenURL(url) {
+                  UIApplication.shared.open(url, options: [:], completionHandler:nil)
               }
-              
-              let facebookAppID = Bundle.main.object(forInfoDictionaryKey: "FacebookAppID") as? String;
-              
-              if (facebookAppID == nil) {
-                  print("FacebookAppID not specified in info.plist");
-                  result(4);
-                  return;
-              }
-              
-              let pasteboardItems = [
-                "com.facebook.sharedSticker.backgroundImage" : (backgroundImage ?? nil) as Any,
-                "com.facebook.sharedSticker.appID": facebookAppID!,
-              ] as [String : Any];
-              
-              if #available(iOS 10.0, *) {
-                  let pasteboardOptions = [UIPasteboard.OptionsKey.expirationDate : NSDate().addingTimeInterval(60 * 5)]
-                  UIPasteboard.general.setItems([pasteboardItems], options: pasteboardOptions)
-                  UIApplication.shared.open(urlScheme, options: [:], completionHandler: { (success) in
-                      if (success) {
-                          result(0);
-                      } else {
-                          result(1);
-                      }
-                  })
-              } else {
-                  UIPasteboard.general.items = [pasteboardItems]
-                  UIApplication.shared.openURL(urlScheme)
-                  result(0);
-              }
-          } else {
-              if #available(iOS 10.0, *) {
-                  UIApplication.shared.open(FBMarketURL!, options: [:], completionHandler: { (success) in })
-              } else {
-                  UIApplication.shared.openURL(FBMarketURL!)
-              }
-              result(1);
           }
+         
       } else if (call.method == "share_FB_feed") {
           let args = (call.arguments as! NSDictionary)
           let backgroundImagePath = args["backgroundImage"] as! String;
@@ -159,7 +120,7 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
           
           let photo = SharePhoto(
               image: backgroundImage!,
-              userGenerated: true
+              isUserGenerated: true
           );
           let content = SharePhotoContent();
           content.photos = [photo];
