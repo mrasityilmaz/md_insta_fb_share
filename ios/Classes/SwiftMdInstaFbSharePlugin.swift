@@ -87,7 +87,7 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
           
           
           if UIApplication.shared.canOpenURL(urlScheme) { // has Instagram
-              let url = URL(string: "instagram://library?LocalIdentifier=" + backgroundImagePath)
+              let url = URL(string: "instagram://library?LocalIdentifier=" + backgroundImagePath)!
 
               if UIApplication.shared.canOpenURL(url) {
                   UIApplication.shared.open(url, options: [:], completionHandler:nil)
