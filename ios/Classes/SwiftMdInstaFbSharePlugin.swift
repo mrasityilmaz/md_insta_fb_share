@@ -82,12 +82,12 @@ public class SwiftMdInstaFbSharePlugin: NSObject, FlutterPlugin, SharingDelegate
           }
       } else if (call.method == "share_FB_story") {
           let args = (call.arguments as! NSDictionary)
-          let urlScheme = URL(string: "instagram-stories://app")!
+          let urlScheme = URL(string: "instagram://app")!
           let backgroundImagePath = args["backgroundImage"] as! String;
           
           
           if UIApplication.shared.canOpenURL(urlScheme) { // has Instagram
-              let url = URL(string: "instagram://library?LocalIdentifier=" + backgroundImagePath)!
+              let url = URL(string: "instagram://library?AssetPath=" + backgroundImagePath)!
 
               if UIApplication.shared.canOpenURL(url) {
                   UIApplication.shared.open(url, options: [:], completionHandler:nil)
